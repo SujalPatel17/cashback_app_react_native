@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Cashback Tracker",
+    "slug": "cashback-tracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cashback.tracker"
+    },
+    "android": {
+      "package": "com.cashback.tracker",
+      "permissions": [
+        "POST_NOTIFICATIONS",
+        "SCHEDULE_EXACT_ALARM"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "color": "#009688"
+        }
+      ],
+      "expo-font"
+    ]
+  }
+}
