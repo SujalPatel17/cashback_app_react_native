@@ -1,4 +1,3 @@
-// Ported from lib/screens/pending_check_screen.dart
 import React, { useCallback, useState } from 'react';
 import {
   View,
@@ -8,11 +7,12 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { dbHelper } from '../db/database';
 import { TransactionModel } from '../models/Transaction';
 import { formatYMMMd } from '../utils/format';
-import { TEAL_50, TEAL_800 } from '../theme';
+import { MIDNIGHT, GOLD, GOLD_LIGHT, SLATE, SLATE_100, SLATE_200 } from '../theme';
 
 export default function PendingCheckScreen() {
   const [pending, setPending] = useState<TransactionModel[]>([]);
@@ -36,30 +36,42 @@ export default function PendingCheckScreen() {
 
   if (pending.length === 0) {
     return (
-      <View style={styles.center}>
-        <Text>No pending cashback transactions.</Text>
+      <View style={styles.empty}>
+        <View style={styles.emptyIcon}>
+          <Ionicons name="checkmark-circle" size={48} color={GOLD} />
+        </View>
+        <Text style={styles.emptyTitle}>All clear</Text>
+        <Text style={styles.emptyText}>
+          No pending cashback to verify. Transactions appear here 90 days after they're added.
+        </Text>
       </View>
     );
   }
 
   return (
     <FlatList
-      style={styles.list}
+      style={styles.root}
       data={pending}
       keyExtractor={(item) => String(item.id)}
+      contentContainerStyle={styles.list}
       renderItem={({ item }) => (
         <View style={styles.card}>
-          <View style={styles.flex}>
+          <View style={styles.cardLeft}>
             <Text style={styles.category}>{item.category}</Text>
             <Text style={styles.detail}>
-              ₹{item.amount.toFixed(2)} on {formatYMMMd(item.date)}
+              ₹{item.amount.toFixed(2)} · {formatYMMMd(item.date)}
+            </Text>
+            <Text style={styles.cashback}>
+              Cashback: ₹{item.cashback.toFixed(2)}
             </Text>
           </View>
           <TouchableOpacity
-            style={styles.button}
+            style={styles.checkBtn}
             onPress={() => markAsChecked(item)}
+            activeOpacity={0.75}
           >
-            <Text style={styles.buttonText}>Mark as Checked</Text>
+            <Ionicons name="checkmark" size={16} color={MIDNIGHT} />
+            <Text style={styles.checkBtnText}>Verified</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -68,34 +80,80 @@ export default function PendingCheckScreen() {
 }
 
 const styles = StyleSheet.create({
-  list: { flex: 1, backgroundColor: '#fff', padding: 16 },
-  center: {
+  root: { flex: 1, backgroundColor: '#fff' },
+  list: { padding: 16, paddingBottom: 32 },
+
+  empty: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
+    paddingHorizontal: 40,
   },
+  emptyIcon: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    backgroundColor: GOLD_LIGHT,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: MIDNIGHT,
+    marginBottom: 10,
+  },
+  emptyText: {
+    fontSize: 15,
+    color: SLATE,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+
   card: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    marginVertical: 8,
-    elevation: 2,
+    borderRadius: 14,
+    padding: 16,
+    marginVertical: 5,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
-  flex: { flex: 1 },
-  category: { fontSize: 16, fontWeight: 'bold' },
-  detail: { marginTop: 4 },
-  button: {
-    backgroundColor: TEAL_50,
+  cardLeft: { flex: 1 },
+  category: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: MIDNIGHT,
+    marginBottom: 4,
+  },
+  detail: {
+    fontSize: 13,
+    color: SLATE,
+  },
+  cashback: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: GOLD,
+    marginTop: 3,
+  },
+  checkBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: GOLD,
     borderRadius: 24,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    gap: 5,
   },
-  buttonText: { color: TEAL_800, fontWeight: '600' },
+  checkBtnText: {
+    color: MIDNIGHT,
+    fontWeight: '700',
+    fontSize: 13,
+  },
 });

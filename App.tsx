@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { RootStackParamList, TabParamList } from './src/navigation/types';
 import { notificationService } from './src/services/notifications';
+import { MIDNIGHT, MIDNIGHT_700, GOLD, SLATE } from './src/theme';
 
 import HomeScreen from './src/screens/HomeScreen';
 import AnalyticsScreen from './src/screens/AnalyticsScreen';
@@ -17,24 +18,22 @@ import AddTransactionScreen from './src/screens/AddTransactionScreen';
 const Tab = createBottomTabNavigator<TabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-// colorSchemeSeed: Colors.teal
-const TEAL = '#009688';
-
 const AppTheme = {
   ...DefaultTheme,
-  colors: { ...DefaultTheme.colors, primary: TEAL },
+  colors: { ...DefaultTheme.colors, primary: GOLD },
 };
 
 function Tabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: TEAL },
+        headerStyle: { backgroundColor: MIDNIGHT },
         headerTintColor: '#fff',
-        // Matches the Dart BottomNavigationBar styling.
-        tabBarStyle: { backgroundColor: '#000' },
-        tabBarActiveTintColor: '#2196F3', // blue when selected
-        tabBarInactiveTintColor: '#fff', // white icons
+        headerTitleStyle: { fontWeight: '700', letterSpacing: 0.3 },
+        tabBarStyle: { backgroundColor: MIDNIGHT_700, borderTopWidth: 0 },
+        tabBarActiveTintColor: GOLD,
+        tabBarInactiveTintColor: SLATE,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600', letterSpacing: 0.3 },
         tabBarIcon: ({ color, size }) => {
           const icons: Record<keyof TabParamList, keyof typeof Ionicons.glyphMap> = {
             Home: 'home',
@@ -64,7 +63,6 @@ function Tabs() {
 
 export default function App() {
   useEffect(() => {
-    // Initialise timezone/notifications, like main() in main.dart.
     notificationService.init();
   }, []);
 
@@ -78,8 +76,9 @@ export default function App() {
           component={AddTransactionScreen}
           options={{
             title: 'Add Transaction',
-            headerStyle: { backgroundColor: TEAL },
+            headerStyle: { backgroundColor: MIDNIGHT },
             headerTintColor: '#fff',
+            headerTitleStyle: { fontWeight: '700' },
           }}
         />
       </Stack.Navigator>
