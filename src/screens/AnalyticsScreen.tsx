@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -184,6 +184,15 @@ function CashbackProgressChart({
   isLoading: boolean;
   transactions: TransactionModel[];
 }) {
+  const [pressedIndex, setPressedIndex] = useState<number | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
   if (isLoading) {
     return (
       <View style={styles.chartBox}>
@@ -199,6 +208,12 @@ function CashbackProgressChart({
     );
   }
 
+  function handleBarPress(index: number) {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setPressedIndex(index);
+    timerRef.current = setTimeout(() => setPressedIndex(null), 2000);
+  }
+
   const cashbackByMonth = Array.from({ length: 12 }, (_, monthIndex) =>
     Math.min(
       400,
@@ -211,7 +226,16 @@ function CashbackProgressChart({
   const barData = cashbackByMonth.map((value, i) => ({
     value,
     label: MONTH_NAMES[i],
-    frontColor: BAR_COLOR,
+    frontColor: pressedIndex === i ? GOLD : BAR_COLOR,
+    onPress: () => handleBarPress(i),
+    topLabelComponent:
+      pressedIndex === i && value > 0
+        ? () => (
+            <View style={styles.barLabelWrap}>
+              <Text style={styles.barLabel}>₹{value.toFixed(0)}</Text>
+            </View>
+          )
+        : undefined,
   }));
 
   return (
@@ -333,5 +357,15 @@ const styles = StyleSheet.create({
 
   barChartWrap: {
     marginTop: 12,
+  },
+  barLabelWrap: {
+    width: 42,
+    alignItems: 'center',
+    marginBottom: 3,
+  },
+  barLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: MIDNIGHT,
   },
 });
